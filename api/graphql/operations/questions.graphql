@@ -1,0 +1,7 @@
+query randomQuestion {
+  getRandomQuestion {
+    id
+    question
+    answers
+  }
+}

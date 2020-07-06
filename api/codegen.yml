@@ -1,0 +1,19 @@
+overwrite: true
+schema: "./graphql/schema.graphql"
+documents: "./graphql/operations/*.graphql"
+generates:
+  graphql/generated.ts:
+    config:
+      contextType: "./data#Context"
+      avoidOptionals:
+        field: false
+        inputValue: false
+        object: false
+      mappers:
+        Question: ./data#QuestionModel
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+  ./graphql.schema.json:
+    plugins:
+      - "introspection"

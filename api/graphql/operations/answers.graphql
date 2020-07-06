@@ -1,0 +1,6 @@
+mutation answerQuestion($id: ID, $answer: String) {
+  answerQuestion(id: $id, answer: $answer) {
+    correct
+    correctAnswer
+  }
+}

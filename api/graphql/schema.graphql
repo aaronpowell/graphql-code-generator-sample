@@ -1,0 +1,29 @@
+type Question {
+  id: ID!
+  question: String!
+  correctAnswer: String!
+  answers: [String!]!
+}
+
+type Query {
+  question(id: ID!): Question
+  getRandomQuestion: Question
+}
+
+type Answer {
+  questionId: ID
+  question: String!
+  submittedAnswer: String!
+  correctAnswer: String!
+  correct: Boolean
+}
+
+type Mutation {
+  answerQuestion(id: ID, answer: String): Answer
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+

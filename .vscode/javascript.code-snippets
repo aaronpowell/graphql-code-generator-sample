@@ -1,0 +1,161 @@
+{
+  "Azure Function": {
+    "scope": "typescript",
+    "prefix": "graphql-func",
+    "body": [
+      "import { ApolloServer } from \"apollo-server-azure-functions\";",
+      "import { importSchema } from \"graphql-import\";",
+      "import resolvers from \"./resolvers\";",
+      "",
+      "const server = new ApolloServer({",
+      "\ttypeDefs: importSchema(\"./graphql/schema.graphql\"),",
+      "\tresolvers,",
+      "});",
+      "",
+      "export default server.createHandler();"
+    ]
+  },
+
+  "Data Store": {
+    "scope": "typescript",
+    "prefix": "ds-impl",
+    "body": [
+      "import { CosmosClient } from \"@azure/cosmos\";",
+      "import { Question } from \"./generated\";",
+      "",
+      "class DataStore {",
+      "\t#client: CosmosClient;",
+      "\t#databaseName = \"trivia\";",
+      "\t#containerName = \"questions\";",
+      "",
+      "#getContainer = () => {",
+      "\treturn this.#client",
+      "\t\t.database(this.#databaseName)",
+      "\t\t.container(this.#containerName);",
+      "\t};",
+      "",
+      "\tconstructor(client: CosmosClient) {",
+      "\t\tthis.#client = client;",
+      "\t}",
+      "",
+      "\tasync getQuestionById(id: string) {",
+      "\t\tconst container = this.#getContainer();",
+      "",
+      "\t\tconst question = await container.items",
+      "\t\t\t.query({",
+      "\t\t\t\tquery: \"SELECT * FROM c WHERE c.id = @id\",",
+      "\t\t\t\tparameters: [{ name: \"@id\", value: id }],",
+      "\t\t\t})",
+      "\t\t\t.fetchAll();",
+      "",
+      "\t\treturn question.resources[0];",
+      "\t}",
+      "}",
+      "",
+      "export const dataStore = new DataStore(new CosmosClient(process.env.CosmosDB));",
+      "",
+      "export type Context = {",
+      "\tdataStore: DataStore;",
+      "};"
+    ]
+  },
+
+  "Random Question": {
+    "scope": "typescript",
+    "prefix": "random",
+    "body": [
+      "async getQuestions() {",
+      "\tconst container = this.#getContainer();",
+      "",
+      "\tconst question = await container.items",
+      "\t\t.query<Question>({",
+      "\t\t\tquery: \"SELECT * FROM c\",",
+      "\t\t})",
+      "\t\t.fetchAll();",
+      "",
+      "\treturn question.resources;",
+      "}"
+    ]
+  },
+
+  "Question Resolver": {
+    "scope": "typescript",
+    "prefix": "Question",
+    "body": [
+      "Question: {",
+      "\tanswers(question) {",
+      "\t\treturn question.answers;",
+      "\t},",
+      "\tcorrectAnswer(question) {",
+      "\t\treturn question.correctAnswer;",
+      "\t},",
+      "\tid(question) {",
+      "\t\treturn question.id;",
+      "\t},",
+      "\tquestion(question) {",
+      "\t\treturn question.question;",
+      "\t},",
+      "},"
+    ]
+  },
+
+  "QuestionModel": {
+    "scope": "typescript",
+    "prefix": "QuestionModel",
+    "body": [
+      "export type QuestionModel = {",
+      "\tid: string;",
+      "\tquestion: string;",
+      "\tcategory: string;",
+      "\tincorrect_answers: string[];",
+      "\tcorrect_answer: string;",
+      "\ttype: string;",
+      "\tdifficulty: \"easy\" | \"medium\" | \"hard\";",
+      "};"
+    ]
+  },
+
+  "Mutation": {
+    "scope": "typescript",
+    "prefix": "Mutation",
+    "body": [
+      "Mutation: {",
+      "\tasync answerQuestion(_, { id, answer }, { dataStore }) {",
+      "\tconst question = await dataStore.getQuestionById(id);",
+      "",
+      "\treturn {",
+      "\tquestionId: id,",
+      "\tquestion: question.question,",
+      "\tcorrectAnswer: question.correct_answer,",
+      "\tsubmittedAnswer: answer,",
+      "\tcorrect: question.correct_answer === answer,",
+      "\t};",
+      "\t},",
+      "},"
+    ]
+  },
+
+  "Answer Resolver": {
+    "prefix": "Answer",
+    "scope": "typescript",
+    "body": [
+      "Answer: {",
+      "  correct({ correct }) {",
+      "    return correct;",
+      "  },",
+      "  correctAnswer({ correctAnswer }) {",
+      "    return correctAnswer;",
+      "  },",
+      "  question({ question }) {",
+      "    return question;",
+      "  },",
+      "  questionId({ questionId }) {",
+      "    return questionId;",
+      "  },",
+      "  submittedAnswer({ submittedAnswer }) {",
+      "    return submittedAnswer;",
+      "  },",
+      "},"
+    ]
+  }
+}

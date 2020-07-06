@@ -1,0 +1,47 @@
+{
+  "GraphQL types": {
+    "scope": "graphql",
+    "prefix": "types",
+    "body": [
+      "type Question {",
+      "id: ID!",
+      "question: String!",
+      "correctAnswer: String!",
+      "answers: [String!]!",
+      "}"
+    ]
+  },
+
+  "Schema": {
+    "scope": "graphql",
+    "prefix": "schema",
+    "body": [
+      "type Query {",
+      "\tquestion(id: ID!): Question",
+      "\tgetRandomQuestion: Question",
+      "}",
+      "",
+      "schema {",
+      "\tquery: Query",
+      "}"
+    ]
+  },
+
+  "Mutation": {
+    "scope": "graphql",
+    "prefix": "mutation",
+    "body": [
+      "type Answer {",
+      "\tquestionId: ID",
+      "\tquestion: String!",
+      "\tsubmittedAnswer: String!",
+      "\tcorrectAnswer: String!",
+      "\tcorrect: Boolean",
+      "}",
+      "",
+      "type Mutation {",
+      "\tanswerQuestion(id: ID, answer: String): Answer",
+      "}"
+    ]
+  }
+}
