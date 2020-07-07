@@ -10,7 +10,12 @@ export type QuestionModel = {
   difficulty: "easy" | "medium" | "hard";
 };
 
-class DataStore {
+interface DataStore {
+  getQuestionById(id: string): Promise<QuestionModel>;
+  getQuestions(): Promise<QuestionModel[]>;
+}
+
+class CosmosDataStore implements DataStore {
   #client: CosmosClient;
   #databaseName = "trivia";
   #containerName = "questions";
@@ -51,7 +56,25 @@ class DataStore {
   }
 }
 
-export const dataStore = new DataStore(new CosmosClient(process.env.CosmosDB));
+class MockDataStore implements DataStore {
+  #data: QuestionModel[];
+  constructor() {
+    this.#data = require("../../trivia.json");
+  }
+
+  getQuestionById(id: string): Promise<QuestionModel> {
+    return Promise.resolve(this.#data.find((q) => q.id === id));
+  }
+  getQuestions(): Promise<QuestionModel[]> {
+    return Promise.resolve(this.#data);
+  }
+}
+
+export const dataStore = new CosmosDataStore(
+  new CosmosClient(process.env.CosmosDB)
+);
+
+// export const dataStore = new MockDataStore();
 
 export type Context = {
   dataStore: DataStore;
