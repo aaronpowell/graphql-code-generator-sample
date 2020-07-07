@@ -1,6 +1,6 @@
 {
   "React Hooks": {
-    "scope": "yml",
+    "scope": "yaml",
     "prefix": "react",
     "body": [
       "  ../src/generated.tsx:",

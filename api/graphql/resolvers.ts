@@ -12,7 +12,9 @@ const resolvers: Resolvers = {
   },
   Question: {
     answers(question) {
-      return question.incorrect_answers.concat([question.correct_answer]);
+      return question.incorrect_answers
+        .concat([question.correct_answer])
+        .sort();
     },
     correctAnswer(question) {
       return question.correct_answer;

@@ -17,3 +17,12 @@ generates:
   ./graphql.schema.json:
     plugins:
       - "introspection"
+  ../src/generated.tsx:
+    config:
+      withHooks: true
+      withHOC: false
+      withComponent: false
+    plugins:
+      - "typescript"
+      - "typescript-react-apollo"
+      - "typescript-operations"
