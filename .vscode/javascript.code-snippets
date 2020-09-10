@@ -6,13 +6,18 @@
       "import { ApolloServer } from \"apollo-server-azure-functions\";",
       "import { importSchema } from \"graphql-import\";",
       "import resolvers from \"./resolvers\";",
+      "import { dataStore } from \"./data\";",
       "",
       "const server = new ApolloServer({",
-      "\ttypeDefs: importSchema(\"./graphql/schema.graphql\"),",
-      "\tresolvers,",
+      "  typeDefs: importSchema(\"./graphql/schema.graphql\"),",
+      "  resolvers,",
+      "  context: {",
+      "    dataStore,",
+      "  },",
       "});",
       "",
-      "export default server.createHandler();"
+      "export default server.createHandler();",
+      ""
     ]
   },
 
@@ -82,20 +87,22 @@
     "scope": "typescript",
     "prefix": "Question",
     "body": [
-      "Question: {",
-      "\tanswers(question) {",
-      "\t\treturn question.answers;",
-      "\t},",
-      "\tcorrectAnswer(question) {",
-      "\t\treturn question.correctAnswer;",
-      "\t},",
-      "\tid(question) {",
-      "\t\treturn question.id;",
-      "\t},",
-      "\tquestion(question) {",
-      "\t\treturn question.question;",
-      "\t},",
-      "},"
+      "  Question: {",
+      "    answers(question) {",
+      "      return question.incorrect_answers",
+      "        .concat([question.correct_answer])",
+      "        .sort();",
+      "    },",
+      "    correctAnswer(question) {",
+      "      return question.correct_answer;",
+      "    },",
+      "    id(question) {",
+      "      return question.id;",
+      "    },",
+      "    question(question) {",
+      "      return question.question;",
+      "    },",
+      "  },"
     ]
   },
 
@@ -115,24 +122,25 @@
     ]
   },
 
-  "Mutation": {
+  "Create Mutation": {
     "scope": "typescript",
-    "prefix": "Mutation",
+    "prefix": "create-mutation",
     "body": [
-      "Mutation: {",
-      "\tasync answerQuestion(_, { id, answer }, { dataStore }) {",
-      "\tconst question = await dataStore.getQuestionById(id);",
+      "  Mutation: {",
+      "    async answerQuestion(_, { id, answer }, { dataStore }) {",
+      "      const question = await dataStore.getQuestionById(id);",
       "",
-      "\treturn {",
-      "\tquestionId: id,",
-      "\tquestion: question.question,",
-      "\tcorrectAnswer: question.correct_answer,",
-      "\tsubmittedAnswer: answer,",
-      "\tcorrect: question.correct_answer === answer,",
-      "\t};",
-      "\t},",
-      "},"
-    ]
+      "      return {",
+      "        questionId: id,",
+      "        question: question.question,",
+      "        correctAnswer: question.correct_answer,",
+      "        submittedAnswer: answer,",
+      "        correct: question.correct_answer === answer,",
+      "      };",
+      "    },",
+      "  },"
+    ],
+    "description": "Create Mutation"
   },
 
   "Answer Resolver": {
@@ -157,5 +165,20 @@
       "  },",
       "},"
     ]
+  },
+
+  "Implement query": {
+    "prefix": "implement-query",
+    "scope": "typescript",
+    "body": [
+      "    question(_, { id }, { dataStore }) {",
+      "      return dataStore.getQuestionById(id);",
+      "    },",
+      "    async getRandomQuestion(_, __, { dataStore }) {",
+      "      const questions = await dataStore.getQuestions();",
+      "      return questions[Math.floor(Math.random() * questions.length) + 1];",
+      "    },"
+    ],
+    "description": "Implement query"
   }
 }

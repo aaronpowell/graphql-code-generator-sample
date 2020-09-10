@@ -13,5 +13,28 @@
       "      - \"typescript-react-apollo\"",
       "      - \"typescript-operations\""
     ]
+  },
+
+  "Create codegen config": {
+    "scope": "yaml",
+    "prefix": "config",
+    "body": [
+      "overwrite: true",
+      "schema: \"./graphql/schema.graphql\"",
+      "documents: \"./graphql/operations/*.graphql\"",
+      "generates:",
+      "  graphql/generated.ts:",
+      "    config:",
+      "      contextType: \"./data#Context\"",
+      "      mappers:",
+      "        Question: ./data#QuestionModel",
+      "    plugins:",
+      "      - \"typescript\"",
+      "      - \"typescript-resolvers\"",
+      "  ./graphql.schema.json:",
+      "    plugins:",
+      "      - \"introspection\""
+    ],
+    "description": "Create codegen config"
   }
 }
