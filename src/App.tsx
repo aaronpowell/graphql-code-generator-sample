@@ -9,7 +9,7 @@ import {
 import ApolloClient from "apollo-boost";
 
 const client = new ApolloClient<object>({
-  uri: "http://localhost:7072/api/graphql",
+  uri: "/api/graphql",
 });
 
 type QuestionProps = {
