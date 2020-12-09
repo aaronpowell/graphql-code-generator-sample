@@ -24,10 +24,6 @@
       "documents: \"./graphql/operations/*.graphql\"",
       "generates:",
       "  graphql/generated.ts:",
-      "    config:",
-      "      contextType: \"./data#Context\"",
-      "      mappers:",
-      "        Question: ./data#QuestionModel",
       "    plugins:",
       "      - \"typescript\"",
       "      - \"typescript-resolvers\"",
@@ -36,5 +32,16 @@
       "      - \"introspection\""
     ],
     "description": "Create codegen config"
+  },
+  "Map types": {
+    "scope": "yaml",
+    "prefix": "map-types",
+    "body": [
+      "config:",
+      "  contextType: \"./data#Context\"",
+      "  mappers:",
+      "    Question: ./data#QuestionModel"
+    ],
+    "description": "Map types"
   }
 }
